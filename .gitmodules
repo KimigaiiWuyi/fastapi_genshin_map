@@ -1,0 +1,3 @@
+[submodule "fastapi_genshin_map/GenshinMap"]
+	path = fastapi_genshin_map/GetMapImage/GenshinMap
+	url = https://github.com/MingxuanGame/GenshinMap.git

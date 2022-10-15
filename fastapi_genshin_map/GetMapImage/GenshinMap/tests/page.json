@@ -1,0 +1,44 @@
+{
+  "list": [
+      {
+          "id": 1,
+          "name": "蒙德",
+          "type": 1,
+          "pc_icon_url": "https://uploadstatic.mihoyo.com/ys-obc/2022/03/29/75379475/fa4770a33c59b94f2ba0d6e3608a9a47_196000061405650070.png",
+          "mobile_icon_url": "",
+          "sort": 5,
+          "pc_icon_url2": "https://uploadstatic.mihoyo.com/ys-obc/2022/03/29/75379475/15f8175ad96ab5f0a38bf14b9e359666_3990014784054466810.png",
+          "map_id": 2,
+          "jump_url": "",
+          "jump_type": "coordinate",
+          "center": "-111.96,-200.87",
+          "zoom": "-1.00"
+      },
+      {
+          "id": 4,
+          "name": "龙脊雪山",
+          "type": 1,
+          "pc_icon_url": "https://uploadstatic.mihoyo.com/ys-obc/2022/03/29/75379475/e60eb5568a5c8122d566bd40decc5371_9191303240951212319.png",
+          "mobile_icon_url": "",
+          "sort": 4,
+          "pc_icon_url2": "https://uploadstatic.mihoyo.com/ys-obc/2022/03/29/75379475/0ba7ceadf1a8a04bd698674371e6813d_6227119471395520312.png",
+          "map_id": 2,
+          "jump_url": "",
+          "jump_type": "coordinate",
+          "center": "1183.49,-116.41",
+          "zoom": "0.00"
+      },
+      {
+          "id": 3,
+          "name": "璃月",
+          "type": 1,
+          "pc_icon_url": "https://uploadstatic.mihoyo.com/ys-obc/2022/03/29/75379475/49985f158ed6060b98538fd3b62f6d0f_5835606737467298557.png",
+          "mobile_icon_url": "",
+          "sort": 3,
+          "pc_icon_url2": "https://uploadstatic.mihoyo.com/ys-obc/2022/03/29/75379475/fb1f9ec4eb36cd09bfb412f40a0af864_9071064856381496516.png",
+          "map_id": 2,
+          "jump_url": "",
+          "jump_type": "coordinate",
+          "center": "2602.08,-1612.55",
+          "zoom": "-1.00"
+      }]}

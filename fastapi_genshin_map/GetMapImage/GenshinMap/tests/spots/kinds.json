@@ -1,0 +1,17 @@
+{
+    "retcode": 0,
+    "message": "OK",
+    "data": {
+        "list": [
+            {
+                "id": 581061,
+                "name": "",
+                "icon_id": 101,
+                "icon_url": "https://uploadstatic.mihoyo.com/hk4e/upload/officialsites/202011/wiki-ys-map-in-game-5_1605084458_2681.png",
+                "is_game": 2
+            }
+        ],
+        "is_sync": false,
+        "already_share": false
+    }
+}

@@ -1,0 +1,24 @@
+{
+    "retcode": 0,
+    "message": "OK",
+    "data": {
+        "spots": {
+            "581061": {
+                "list": [
+                    {
+                        "id": 2267179,
+                        "name": "",
+                        "content": "",
+                        "kind_id": 581061,
+                        "spot_icon": "",
+                        "x_pos": 416.3067626953125,
+                        "y_pos": 57.92724609375,
+                        "nick_name": "MingxuanGame1",
+                        "avatar_url": "https://img-static.mihoyo.com/avatar/avatar40004.png",
+                        "status": 1
+                    }
+                ]
+            }
+        }
+    }
+}

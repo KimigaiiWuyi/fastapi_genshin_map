@@ -1,0 +1,96 @@
+{
+  "tree": [
+    {
+      "id": 1,
+      "name": "传送点",
+      "icon": "",
+      "parent_id": 0,
+      "depth": 1,
+      "node_type": 1,
+      "jump_type": 0,
+      "jump_target_id": 0,
+      "display_priority": 0,
+      "children": [
+        {
+          "id": 2,
+          "name": "七天神像",
+          "icon": "https://uploadstatic.mihoyo.com/ys-obc/2020/09/08/75276545/c59585d1fabc9c22ad3fcf94e1622aa8_357413506633071859.png",
+          "parent_id": 1,
+          "depth": 2,
+          "node_type": 2,
+          "jump_type": 0,
+          "jump_target_id": 0,
+          "display_priority": 0,
+          "children": [],
+          "activity_page_label": 27,
+          "area_page_label": [],
+          "is_all_area": true
+        },
+        {
+          "id": 3,
+          "name": "传送锚点",
+          "icon": "https://uploadstatic.mihoyo.com/ys-obc/2020/09/08/75276545/0cc42d15134cbb724304050fd0bbcaac_8799482478853097434.png",
+          "parent_id": 1,
+          "depth": 2,
+          "node_type": 2,
+          "jump_type": 0,
+          "jump_target_id": 0,
+          "display_priority": 0,
+          "children": [],
+          "activity_page_label": 27,
+          "area_page_label": [],
+          "is_all_area": true
+        }
+      ],
+      "activity_page_label": 0,
+      "area_page_label": [],
+      "is_all_area": false
+    },
+    {
+      "id": 426,
+      "name": "地标",
+      "icon": "",
+      "parent_id": 0,
+      "depth": 1,
+      "node_type": 1,
+      "jump_type": 0,
+      "jump_target_id": 0,
+      "display_priority": 0,
+      "children": [
+        {
+          "id": 410,
+          "name": "洞口",
+          "icon": "https://uploadstatic.mihoyo.com/ys-obc/2022/08/10/75379475/d06eb3e4e17ad63d822a5065ee6f002e_2513888037572049765.png",
+          "parent_id": 426,
+          "depth": 2,
+          "node_type": 2,
+          "jump_type": 0,
+          "jump_target_id": 0,
+          "display_priority": 0,
+          "children": [],
+          "activity_page_label": 27,
+          "area_page_label": [25],
+          "is_all_area": false
+        },
+        {
+          "id": 190,
+          "name": "浪船锚点",
+          "icon": "https://uploadstatic.mihoyo.com/ys-obc/2021/06/10/16314655/6db2133bf163989dbff9c6a1e0c814a0_7631310718225262758.png",
+          "parent_id": 426,
+          "depth": 2,
+          "node_type": 2,
+          "jump_type": 0,
+          "jump_target_id": 0,
+          "display_priority": 0,
+          "children": [],
+          "activity_page_label": 24,
+          "area_page_label": [8],
+          "is_all_area": false
+        }
+      ],
+      "activity_page_label": 0,
+      "area_page_label": [],
+      "is_all_area": false
+    }
+ ]
+}

@@ -1,0 +1,53 @@
+name: Unittest
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+
+jobs:
+  test:
+    name: Coverage
+    strategy:
+      matrix:
+        version: ["3.8", "3.9", "3.10"]
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    env:
+      OS: ${{ matrix.os }}
+      PYTHON_VERSION: ${{ matrix.python-version }}
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.version }}
+          architecture: "x64"
+
+      - uses: Gr1N/setup-poetry@v7
+
+      - id: poetry-cache
+        run: echo "::set-output name=dir::$(poetry config virtualenvs.path)"
+        shell: bash
+
+      - uses: actions/cache@v2
+        with:
+          path: ${{ steps.poetry-cache.outputs.dir }}
+          key: ${{ runner.os }}-poetry-${{ steps.python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
+
+      - name: Install dependencies
+        run: poetry install
+        shell: bash
+
+      - name: Run Pytest
+        run: |
+          poetry run pytest -n auto --cov-report xml
+
+      - name: Upload report
+        uses: codecov/codecov-action@v3
+        with:
+          env_vars: OS,PYTHON_VERSION
+          files: ./coverage.xml
+          flags: unittests

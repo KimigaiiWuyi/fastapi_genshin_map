@@ -1,0 +1,31 @@
+{
+  "point_list": [
+    {
+      "id": 26831,
+      "label_id": 298,
+      "x_pos": 114,
+      "y_pos": 514,
+      "author_name": "悦弥",
+      "ctime": "2022-06-16 10:26:12",
+      "display_state": 1
+    },
+    {
+      "id": 26832,
+      "label_id": 298,
+      "x_pos": 1919,
+      "y_pos": 810,
+      "author_name": "悦弥",
+      "ctime": "2022-06-16 10:26:12",
+      "display_state": 1
+    },
+    {
+      "id": 26831,
+      "label_id": 297,
+      "x_pos": -1287.5,
+      "y_pos": 716,
+      "author_name": "悦弥",
+      "ctime": "2022-06-16 10:26:12",
+      "display_state": 1
+    }
+  ]
+}
