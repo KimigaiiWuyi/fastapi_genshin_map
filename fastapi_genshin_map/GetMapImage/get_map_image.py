@@ -2,6 +2,7 @@ import random
 from io import BytesIO
 from pathlib import Path
 from time import time
+from typing import Optional, Union
 
 from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import FileResponse, StreamingResponse
@@ -68,7 +69,11 @@ async def create_genshin_map():
 
 
 @router.get('')
-async def get_map_by_point(resource_name=Query(None), map_id=Query(str)):
+async def get_map_by_point(
+    resource_name: str = '甜甜花',
+    map_id: Union[str, int] = 2,
+    is_cluster: bool = False,
+):
     req_id = random.randint(10000, 99999)
     prefix = f'>> [请求序列:{req_id}]'
     logger.info(f'{prefix} 收到资源点访问请求! [资源名称] {resource_name} [地图ID] {map_id}')
@@ -91,7 +96,10 @@ async def get_map_by_point(resource_name=Query(None), map_id=Query(str)):
     # 寻找保存点
     if not RESOURCE_PATH.exists():
         RESOURCE_PATH.mkdir()
-    save_path = RESOURCE_PATH / f'{map_data.name}_{resource_name}.jpg'
+    if is_cluster:
+        save_path = RESOURCE_PATH / f'{map_data.name}_{resource_name}_KMEANS.jpg'
+    else:
+        save_path = RESOURCE_PATH / f'{map_data.name}_{resource_name}.jpg'
 
     # 如果存在缓存,直接回复
     if save_path.exists():
@@ -122,36 +130,36 @@ async def get_map_by_point(resource_name=Query(None), map_id=Query(str)):
     # 转换坐标
     transmittable_converted = utils.convert_pos(transmittable, maps.detail.origin)
 
-    # 进行最密点获取,暂时废弃
-    # if len(transmittable_converted) >= 3:
-    #    group_point = img.k_means_points(transmittable_converted)
-
-    # 如果资源点不存在,返回错误
-    if len(transmittable_converted) == 0:
-        return ERROR
+    # 进行最密点获取
+    if is_cluster:
+        group_point = img.k_means_points(transmittable_converted)
     else:
-        # 计算极限坐标
-        up = 20000
-        down = 0
-        left = 20000
-        right = 0
-        for point in transmittable_converted:
-            if point.x >= right:
-                right = point.x
-            if point.x <= left:
-                left = point.x
-            if point.y >= down:
-                down = point.y
-            if point.y <= up:
-                up = point.y
-        offset = 100
-        group_point = [
-            [
-                models.XYPoint(left - offset, up - offset),
-                models.XYPoint(right + offset, down + offset),
-                transmittable_converted,
+        # 如果资源点不存在,返回错误
+        if len(transmittable_converted) == 0:
+            return ERROR
+        else:
+            # 计算极限坐标
+            up = 20000
+            down = 0
+            left = 20000
+            right = 0
+            for point in transmittable_converted:
+                if point.x >= right:
+                    right = point.x
+                if point.x <= left:
+                    left = point.x
+                if point.y >= down:
+                    down = point.y
+                if point.y <= up:
+                    up = point.y
+            offset = 100
+            group_point = [
+                [
+                    models.XYPoint(left - offset, up - offset),
+                    models.XYPoint(right + offset, down + offset),
+                    transmittable_converted,
+                ]
             ]
-        ]
 
     # 打开主地图
     genshin_map = Image.open(map_path)

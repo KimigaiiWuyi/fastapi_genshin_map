@@ -19,6 +19,7 @@
 |  ----  | ----  | ----  |
 | resource_name  | str | 资源名称 |
 | map_id  | str/int | 地图ID |
+| is_cluster | bool | 是否使用聚类算法 |
 
 ## 丨感谢
 
