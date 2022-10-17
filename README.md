@@ -37,3 +37,6 @@
 + Bot项目: [GenshinUID](https://github.com/KimigaiiWuyi/GenshinUID)
 + [爱发电](https://afdian.net/@KimigaiiWuyi)
 + [GPL-3.0 License](https://github.com/KimigaiiWuyi/GenshinUID/blob/main/LICENSE) ©[@KimigaiiWuyi](https://github.com/KimigaiiWuyi)
+
+## 丨返回图示例
+![测试.jpg](https://s2.loli.net/2022/10/17/D2cI5tQdgVk3Uuz.jpg)
