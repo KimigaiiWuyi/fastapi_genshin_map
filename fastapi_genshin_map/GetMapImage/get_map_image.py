@@ -4,6 +4,8 @@ from pathlib import Path
 from time import time
 from typing import Optional, Union
 
+import yaml
+
 from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import FileResponse, StreamingResponse
 from PIL import Image
@@ -21,6 +23,8 @@ CHASM_PATH = MAP / 'chasm.png'
 ENKANOMIYA_PATH = MAP / 'enkanomiya.png'
 TEYVAT_PATH = MAP / 'teyvat.png'
 
+with open(Path(__file__).parent / 'map.yaml', 'r', encoding='utf-8') as ymlfile:
+    resource_aliases = yaml.load(ymlfile, Loader=yaml.SafeLoader)
 
 MAP_ID_DICT = {
     '2': models.MapID.teyvat,  # 提瓦特
@@ -75,6 +79,13 @@ async def get_map_by_point(
     is_cluster: bool = False,
 ):
     req_id = random.randint(10000, 99999)
+    # 判断别名
+    for m in resource_aliases:
+        for a in resource_aliases[m]:
+            for r in resource_aliases[m][a]:
+                if resource_name == r:
+                    resource_name = a
+
     prefix = f'>> [请求序列:{req_id}]'
     logger.info(f'{prefix} 收到资源点访问请求! [资源名称] {resource_name} [地图ID] {map_id}')
     ERROR = {
@@ -167,6 +178,13 @@ async def get_map_by_point(
     # 计算裁切点
     lt_point = group_point[0][0]
     rb_point = group_point[0][1]
+
+    # 增加裁切长宽
+    x = rb_point[0] - lt_point[0]
+    y = rb_point[1] - lt_point[1]
+    if x < 500 or y < 500:
+        lt_point = models.XYPoint(lt_point.x - 400, lt_point.y - 400)
+        rb_point = models.XYPoint(rb_point.x + 400, rb_point.y + 400)
 
     # 开始裁切
     genshin_map = genshin_map.crop(
