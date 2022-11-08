@@ -191,12 +191,15 @@ async def get_map_by_point(
     is_cluster: bool = False,
 ):
     req_id = random.randint(10000, 99999)
+
+    def resource_aliases_to_name(resource_name: str) -> str:
+        for m in resource_aliases:
+            for a in resource_aliases[m]:
+                if resource_name == a or resource_name in resource_aliases[m][a]:
+                    return a
+        return resource_name
     # 判断别名
-    for m in resource_aliases:
-        for a in resource_aliases[m]:
-            for r in resource_aliases[m][a]:
-                if resource_name == r:
-                    resource_name = a
+    resource_name = resource_aliases_to_name(resource_name)
 
     prefix = f">> [请求序列:{req_id}]"
     logger.info(f'{prefix} [查询请求]：在地图 ID {map_id or "auto"} 内查询 {resource_name}...')
