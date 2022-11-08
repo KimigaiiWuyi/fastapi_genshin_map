@@ -193,6 +193,7 @@ async def get_map_by_point(
     req_id = random.randint(10000, 99999)
 
     def resource_aliases_to_name(resource_name: str) -> str:
+        resource_name = resource_name.lower()
         for m in resource_aliases:
             for a in resource_aliases[m]:
                 if resource_name == a or resource_name in resource_aliases[m][a]:
