@@ -11,6 +11,10 @@
 2. `cd` 至 `fastapi_genshin_map`
 3. `python main.py`
 
+## 丨示例
+
+[示例地址](http://map.minigg.cn/map/get_map)
+
 ## 丨使用
 
 ### 获取资源点地图(全)
