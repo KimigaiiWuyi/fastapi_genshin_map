@@ -104,10 +104,11 @@ class XYPoint(NamedTuple):
     y: float
 
 
-class XYZPoint(NamedTuple):
+class XYZSPoint(NamedTuple):
     x: float
     y: float
     z: int
+    s: int
 
 
 class Kind(BaseModel):

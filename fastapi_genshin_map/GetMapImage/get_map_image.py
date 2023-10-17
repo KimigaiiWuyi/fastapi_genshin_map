@@ -89,6 +89,8 @@ async def get_map_response(
 ) -> Optional[Path]:
     # 寻找主地图的缓存
     map_path = MAP / f"{map_id.name}.png"
+    if "/" in resource_name:
+        resource_name = resource_name.replace("/", "_")
 
     # 寻找保存点
     if not RESOURCE_PATH.exists():
@@ -125,7 +127,6 @@ async def get_map_response(
 
     # 转换坐标
     transmittable_converted = utils.convert_pos(transmittable, maps.detail.origin)
-    print(transmittable_converted)
 
     # 进行最密点获取
     if is_cluster:
@@ -190,10 +191,23 @@ async def get_map_response(
             await download_file(icon, icon_path)
         icon_pic = Image.open(icon_path).resize((52, 52))
 
-        if point.z <= 3:
-            mark = Image.open(TEXT_PATH / f"mark_{point.z}.png")
+        if point.s == 1:
+            z = 1
         else:
-            mark = Image.open(TEXT_PATH / f"mark_B.png")
+            z = point.z
+
+        if z <= 3:
+            mark = Image.open(TEXT_PATH / f"mark_{z}.png")
+        else:
+            mark = Image.open(TEXT_PATH / "mark_B.png")
+
+        _m = None
+        if point.s == 1:
+            _m = Image.open(TEXT_PATH / "B.png")
+        elif point.s == 3:
+            _m = Image.open(TEXT_PATH / "W.png")
+        if _m is not None:
+            mark.paste(_m, (13, 50), _m)
 
         mark.paste(icon_pic, (25, 17), icon_pic)
 
