@@ -131,4 +131,5 @@ dmypy.json
 # 地图资源
 fastapi_genshin_map/GetMapImage/map_data
 fastapi_genshin_map/GetMapImage/resource_data
+fastapi_genshin_map/GetMapImage/icon_data
 fastapi_genshin_map/GetMapImage/genshinmap.log

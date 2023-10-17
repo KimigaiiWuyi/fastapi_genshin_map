@@ -8,7 +8,7 @@ from asyncio import gather, create_task
 from PIL import Image
 from httpx import AsyncClient
 
-from .models import Maps, Point, XYPoint
+from .models import Maps, Point, XYPoint, XYZPoint
 
 CLIENT = AsyncClient()
 
@@ -76,7 +76,7 @@ async def get_map_by_pos(
     return await get_img(map.slices[_pos_to_index(x, y)])
 
 
-def get_points_by_id(id_: int, points: List[Point]) -> List[XYPoint]:
+def get_points_by_id(id_: int, points: List[Point]) -> List[XYZPoint]:
     """
     根据 Label ID 获取坐标点
 
@@ -91,13 +91,13 @@ def get_points_by_id(id_: int, points: List[Point]) -> List[XYPoint]:
         `list[XYPoint]`
     """
     return [
-        XYPoint(point.x_pos, point.y_pos)
+        XYZPoint(point.x_pos, point.y_pos, point.z_level)
         for point in points
         if point.label_id == id_
     ]
 
 
-def convert_pos(points: List[XYPoint], origin: List[int]) -> List[XYPoint]:
+def convert_pos(points: List[XYZPoint], origin: List[int]) -> List[XYZPoint]:
     """
     将米游社资源坐标转换为以左上角为原点的坐标系的坐标
 
@@ -118,7 +118,7 @@ def convert_pos(points: List[XYPoint], origin: List[int]) -> List[XYPoint]:
         >>> convert_pos(points, origin)
         [XYPoint(x=6044, y=9335), XYPoint(x=644, y=6135)]
     """
-    return [XYPoint(x + origin[0], y + origin[1]) for x, y in points]
+    return [XYZPoint(x + origin[0], y + origin[1], z) for x, y, z in points]
 
 
 def convert_pos_crop(

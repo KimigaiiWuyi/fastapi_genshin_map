@@ -6,7 +6,7 @@ import numpy as np
 from sklearn.cluster import KMeans
 from shapely.geometry import Point, Polygon
 
-from .models import XYPoint
+from .models import XYPoint, XYZPoint
 
 Pos = Tuple[float, float]
 Poses = List[XYPoint]
@@ -14,8 +14,8 @@ Points = List[Point]
 
 
 def k_means_points(
-    points: List[XYPoint], length: int = 500, clusters: int = 3
-) -> List[Tuple[XYPoint, XYPoint, Poses]]:
+    points: List[XYZPoint], length: int = 500, clusters: int = 3
+) -> List[Tuple[XYZPoint, XYZPoint, Poses]]:
     """
     通过 K-Means 获取集群坐标列表
 

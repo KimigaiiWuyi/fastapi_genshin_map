@@ -59,6 +59,10 @@ class Point(BaseModel):
     author_name: str
     ctime: str
     display_state: int
+    area_id: int
+    ext_attrs: str
+    z_level: int
+    icon_sign: int
 
 
 class Slice(BaseModel):
@@ -98,6 +102,12 @@ class MapInfo(BaseModel):
 class XYPoint(NamedTuple):
     x: float
     y: float
+
+
+class XYZPoint(NamedTuple):
+    x: float
+    y: float
+    z: int
 
 
 class Kind(BaseModel):

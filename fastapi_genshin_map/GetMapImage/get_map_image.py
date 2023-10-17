@@ -9,6 +9,7 @@ from PIL import Image
 
 from .GenshinMap.genshinmap import img, models, request, utils
 from .logger import logger
+from .download import download_file
 
 Image.MAX_IMAGE_PIXELS = 333120000
 router = APIRouter(prefix="/get_map")
@@ -16,6 +17,7 @@ TEXT_PATH = Path(__file__).parent / "texture2d"
 mark_quest = Image.open(TEXT_PATH / "mark_quest.png").resize((32, 32))
 MAP = Path(__file__).parent / "map_data"
 RESOURCE_PATH = Path(__file__).parent / "resource_data"
+ICON_PATH = Path(__file__).parent / "icon_data"
 CHASM_PATH = MAP / "chasm.png"
 ENKANOMIYA_PATH = MAP / "enkanomiya.png"
 TEYVAT_PATH = MAP / "teyvat.png"
@@ -29,6 +31,9 @@ MAP_ID_DICT = {
     "7": models.MapID.enkanomiya,  # 渊下宫
     # MapID.golden_apple_archipelago,  # 金苹果群岛
 }
+
+if not ICON_PATH.exists():
+    ICON_PATH.mkdir(exist_ok=True)
 
 
 @router.on_event("startup")
@@ -89,15 +94,16 @@ async def get_map_response(
         return save_path
 
     maps = await request.get_maps(map_id)
-    labels = await request.get_labels(map_id)
+    trees = await request.get_labels(map_id)
 
     # 请求资源ID
     resource_id = 0
-    for label in labels:
-        for child in label.children:
-            if resource_name == child.name:
-                resource_id = child.id
-                resource_name = child.name
+    for tree in trees:
+        for label in tree.children:
+            if resource_name == label.name:
+                resource_id = label.id
+                resource_name = label.name
+                icon = label.icon
                 break
 
     if resource_id == 0:
@@ -109,6 +115,7 @@ async def get_map_response(
 
     # 转换坐标
     transmittable_converted = utils.convert_pos(transmittable, maps.detail.origin)
+    print(transmittable_converted)
 
     # 进行最密点获取
     if is_cluster:
@@ -167,9 +174,20 @@ async def get_map_response(
             int(point.x) - int(lt_point.x),
             int(point.y) - int(lt_point.y),
         )
-        genshin_map.paste(
-            mark_quest, (point_trans[0] - 16, point_trans[1] - 16), mark_quest
-        )
+
+        icon_path = ICON_PATH / f"{resource_name}.png"
+        if not icon_path.exists():
+            await download_file(icon, icon_path)
+        icon_pic = Image.open(icon_path).resize((52, 52))
+
+        if point.z <= 3:
+            mark = Image.open(TEXT_PATH / f"mark_{point.z}.png")
+        else:
+            mark = Image.open(TEXT_PATH / f"mark_B.png")
+
+        mark.paste(icon_pic, (25, 17), icon_pic)
+
+        genshin_map.paste(mark, (point_trans[0] - 50, point_trans[1] - 100), mark)
 
     # 转换RGB图
     genshin_map = genshin_map.convert("RGB")
@@ -199,6 +217,7 @@ async def get_map_by_point(
                 if resource_name == a or resource_name in resource_aliases[m][a]:
                     return a
         return resource_name
+
     # 判断别名
     resource_name = resource_aliases_to_name(resource_name)
 
