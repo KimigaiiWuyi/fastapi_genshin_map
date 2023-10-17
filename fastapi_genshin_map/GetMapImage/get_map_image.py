@@ -38,7 +38,12 @@ if not ICON_PATH.exists():
 
 @router.on_event("startup")
 async def create_genshin_map():
-    if CHASM_PATH.exists() and ENKANOMIYA_PATH.exists() and TEYVAT_PATH.exists():
+    if (
+        CHASM_PATH.exists()
+        and ENKANOMIYA_PATH.exists()
+        and TEYVAT_PATH.exists()
+        and RESOURCE_PATH.exists()
+    ):
         logger.info("****************** 开始地图API服务 *****************")
         return
     logger.info("****************** 地图API服务进行初始化 *****************")
@@ -71,11 +76,16 @@ async def create_genshin_map():
         if not MAP.exists():
             MAP.mkdir()
         map_img.save(MAP / f"{map_id.name}.png")
+        logger.info("****************** 开始绘制 *****************")
+        trees = await request.get_labels(map_id)
+        for tree in trees:
+            for label in tree.children:
+                await get_map_response("PRE-START", label.name, map_id, False)
     logger.info("****************** 开始地图API服务 *****************")
 
 
 async def get_map_response(
-    prefix: str, resource_name: str, map_id: models.MapID, is_cluster: bool
+    prefix: str, resource_name: str, map_id: models.MapID, is_cluster: bool = False
 ) -> Optional[Path]:
     # 寻找主地图的缓存
     map_path = MAP / f"{map_id.name}.png"
