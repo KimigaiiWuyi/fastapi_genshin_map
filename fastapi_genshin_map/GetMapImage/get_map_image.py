@@ -11,7 +11,7 @@ from .GenshinMap.genshinmap import img, models, request, utils
 from .logger import logger
 from .download import download_file
 
-Image.MAX_IMAGE_PIXELS = 333120000
+Image.MAX_IMAGE_PIXELS = 403120000
 router = APIRouter(prefix="/get_map")
 TEXT_PATH = Path(__file__).parent / "texture2d"
 mark_quest = Image.open(TEXT_PATH / "mark_quest.png").resize((32, 32))
