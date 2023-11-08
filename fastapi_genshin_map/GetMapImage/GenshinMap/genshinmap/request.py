@@ -25,12 +25,17 @@ Spots = Dict[int, List[Spot]]
 async def _request(
     endpoint: str, client: AsyncClient = API_CLIENT
 ) -> Dict[str, Any]:
-    resp = await client.get(endpoint)
-    resp.raise_for_status()
-    data: Dict[str, Any] = resp.json()
-    if data["retcode"] != 0:
-        raise StatusError(data["retcode"], data["message"])
-    return data["data"]
+    while True:
+        try:
+            resp = await client.get(endpoint)
+            resp.raise_for_status()
+            data: Dict[str, Any] = resp.json()
+            if data["retcode"] != 0:
+                raise StatusError(data["retcode"], data["message"])
+            return data["data"]
+        except Exception as e:
+            if "Timeout" in str(e):
+                continue
 
 
 async def get_labels(map_id: MapID) -> List[Tree]:
