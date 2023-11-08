@@ -211,7 +211,17 @@ async def get_map_response(
 
         mark.paste(icon_pic, (25, 17), icon_pic)
 
-        genshin_map.paste(mark, (point_trans[0] - 50, point_trans[1] - 100), mark)
+        mark_size = (40, 40)
+        mark = mark.resize(mark_size)
+
+        genshin_map.paste(
+            mark,
+            (
+                point_trans[0] - mark_size[0] // 2,
+                point_trans[1] - mark_size[1],
+            ),
+            mark,
+        )
 
     # 转换RGB图
     genshin_map = genshin_map.convert("RGB")
@@ -221,7 +231,7 @@ async def get_map_response(
     # genshin_map.save(result_buffer, format='PNG', quality=80, subsampling=0)
 
     # 进行保存
-    genshin_map.save(save_path, "JPEG", quality=85)
+    genshin_map.save(save_path, "JPEG", quality=90)
     logger.info(f"{prefix} [查询成功]：新增缓存 [{save_path.name}]！")
     return save_path
 
