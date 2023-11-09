@@ -78,9 +78,16 @@ async def create_genshin_map():
         map_img.save(MAP / f"{map_id.name}.png")
         logger.info("****************** 开始绘制 *****************")
         trees = await request.get_labels(map_id)
+        # for tree in trees:
+        #     for label in tree.children:
+        #         await get_map_response("PRE-START", label.name, map_id, False)
+        #改成并发
+        import asyncio
+        tasks = []
         for tree in trees:
             for label in tree.children:
-                await get_map_response("PRE-START", label.name, map_id, False)
+                tasks.append(get_map_response("PRE-START", label.name, map_id, False))
+        await asyncio.gather(*tasks)
     logger.info("****************** 开始地图API服务 *****************")
 
 
@@ -187,9 +194,16 @@ async def get_map_response(
         )
 
         icon_path = ICON_PATH / f"{resource_name}.png"
-        if not icon_path.exists():
-            await download_file(icon, icon_path)
-        icon_pic = Image.open(icon_path).resize((52, 52))
+        while True:
+            try:
+                if not icon_path.exists():
+                    await download_file(icon, icon_path)
+                icon_pic = Image.open(icon_path).resize((52, 52))
+            except:
+                await download_file(icon, icon_path)
+                continue
+            break
+
 
         if point.s == 1:
             z = 1
