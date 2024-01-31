@@ -11,7 +11,7 @@ from .GenshinMap.genshinmap import img, models, request, utils
 from .logger import logger
 from .download import download_file
 
-Image.MAX_IMAGE_PIXELS = 403120000
+Image.MAX_IMAGE_PIXELS = 603120000
 router = APIRouter(prefix="/get_map")
 TEXT_PATH = Path(__file__).parent / "texture2d"
 mark_quest = Image.open(TEXT_PATH / "mark_quest.png").resize((32, 32))
@@ -81,8 +81,9 @@ async def create_genshin_map():
         # for tree in trees:
         #     for label in tree.children:
         #         await get_map_response("PRE-START", label.name, map_id, False)
-        #改成并发
+        # 改成并发
         import asyncio
+
         tasks = []
         for tree in trees:
             for label in tree.children:
@@ -204,7 +205,6 @@ async def get_map_response(
                 continue
             break
 
-
         if point.s == 1:
             z = 1
         else:
@@ -270,7 +270,9 @@ async def get_map_by_point(
     resource_name = resource_aliases_to_name(resource_name)
 
     prefix = f">> [请求序列:{req_id}]"
-    logger.info(f'{prefix} [查询请求]：在地图 ID {map_id or "auto"} 内查询 {resource_name}...')
+    logger.info(
+        f'{prefix} [查询请求]：在地图 ID {map_id or "auto"} 内查询 {resource_name}...'
+    )
 
     if map_id:
         # 校验 map_id 有效性
@@ -290,7 +292,9 @@ async def get_map_by_point(
         if res:
             return FileResponse(res)
         if len(maps) > 1:
-            logger.info(f"{prefix} [自动重试]：地图 ID {map._value_} 内不存在 {resource_name}...")
+            logger.info(
+                f"{prefix} [自动重试]：地图 ID {map._value_} 内不存在 {resource_name}..."
+            )
     logger.warning(f"{prefix} [失败]：资源点 - {resource_name} 不存在！")
     return {
         "retcode": -1,

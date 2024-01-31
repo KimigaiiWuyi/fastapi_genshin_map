@@ -47,10 +47,10 @@ async def make_map(map: Maps) -> Image.Image:
     )
     for m in maps:
         img.paste(m, (x, y))
-        x += 4096
+        x += 2048
         if x >= map.total_size[0]:
             x = 0
-            y += 4096
+            y += 2048
     return img
 
 
