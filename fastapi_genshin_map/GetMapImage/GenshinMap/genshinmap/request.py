@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Any, Dict, List, Tuple
 
 from httpx import Response, AsyncClient
-
+from ...logger import logger
 from .exc import StatusError
 from .models import (
     Spot,
@@ -17,7 +17,7 @@ from .models import (
 )
 
 API_CLIENT = AsyncClient(
-    base_url="https://api-takumi.mihoyo.com/common/map_user/ys_obc/v1/map"
+    base_url="https://waf-api-takumi.mihoyo.com/common/map_user/ys_obc"
 )
 Spots = Dict[int, List[Spot]]
 
@@ -25,16 +25,19 @@ Spots = Dict[int, List[Spot]]
 async def _request(
     endpoint: str, client: AsyncClient = API_CLIENT
 ) -> Dict[str, Any]:
+    logger.info(f"[API] 正在访问 {endpoint}")
     while True:
         try:
             resp = await client.get(endpoint)
             resp.raise_for_status()
             data: Dict[str, Any] = resp.json()
+            logger.info(f"[API] {data}")
             if data["retcode"] != 0:
                 raise StatusError(data["retcode"], data["message"])
             return data["data"]
         except Exception as e:
             if "Timeout" in str(e):
+                logger.warning(f"[API] {e}")
                 continue
 
 
@@ -49,7 +52,7 @@ async def get_labels(map_id: MapID) -> List[Tree]:
     返回：
         `list[Tree]`
     """
-    data = await _request(f"/label/tree?map_id={map_id}&app_sn=ys_obc")
+    data = await _request(f"/v2/map/label/tree?map_id={map_id}&app_sn=ys_obc")
     return [Tree.parse_obj(i) for i in data["tree"]]
 
 
@@ -64,7 +67,7 @@ async def get_points(map_id: MapID) -> List[Point]:
     返回：
         `list[Point]`
     """
-    data = await _request(f"/point/list?map_id={map_id}&app_sn=ys_obc")
+    data = await _request(f"/v3/map/point/list?map_id={map_id}&app_sn=ys_obc")
     return [Point.parse_obj(i) for i in data["point_list"]]
 
 
@@ -79,7 +82,9 @@ async def get_maps(map_id: MapID) -> MapInfo:
     返回：
         `MapInfo`
     """
-    data = await _request(f"/info?map_id={map_id}&app_sn=ys_obc&lang=zh-cn")
+    data = await _request(
+        f"/v3/map/info?map_id={map_id}&app_sn=ys_obc&lang=zh-cn"
+    )
     return MapInfo.parse_obj(data["info"])
 
 
@@ -111,7 +116,7 @@ async def get_spot_from_game(
 
     # 1. 申请刷新
     resp = await API_CLIENT.post(
-        "/spot_kind/sync_game_spot",
+        "/v1/map/spot_kind/sync_game_spot",
         json={
             "map_id": str(map_id.value),
             "app_sn": "ys_obc",
@@ -123,7 +128,7 @@ async def get_spot_from_game(
 
     # 2. 获取类别
     resp = await API_CLIENT.get(
-        "/spot_kind/get_spot_kinds?map_id=2&app_sn=ys_obc&lang=zh-cn",
+        "/v1/map/spot_kind/get_spot_kinds?map_id=2&app_sn=ys_obc&lang=zh-cn",
         headers={"Cookie": cookie},
     )
     data = _raise_for_retcode(resp)
@@ -132,7 +137,7 @@ async def get_spot_from_game(
 
     # 3.获取坐标
     resp = await API_CLIENT.post(
-        "/spot/get_map_spots_by_kinds",
+        "/v1/map/spot/get_map_spots_by_kinds",
         json={
             "map_id": str(map_id.value),
             "app_sn": "ys_obc",
@@ -159,7 +164,7 @@ async def get_page_label(map_id: MapID) -> List[PageLabel]:
         `list[PageLabel]`
     """
     data = await _request(
-        f"/get_map_pageLabel?map_id={map_id}&app_sn=ys_obc&lang=zh-cn",
+        f"/v1/map/get_map_pageLabel?map_id={map_id}&app_sn=ys_obc&lang=zh-cn",
     )
     return [PageLabel.parse_obj(i) for i in data["list"]]
 

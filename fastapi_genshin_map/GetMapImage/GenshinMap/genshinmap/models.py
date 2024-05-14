@@ -17,6 +17,8 @@ class MapID(IntEnum):
     """层岩巨渊·地下矿区"""
     # golden_apple_archipelago = 12
     """金苹果群岛"""
+    sea_of_bygone_eras = 34
+    """旧日之海"""
 
 
 class Label(BaseModel):
@@ -190,7 +192,7 @@ class PageLabel(BaseModel):
     @validator("center", pre=True)
     def center_str_to_tuple(cls, v: str) -> Optional[Tuple[float, float]]:
         if v and (splitted := v.split(",")):
-            return tuple(map(float, splitted))
+            return tuple(map(float, splitted))  # type: ignore
 
     @validator("zoom", pre=True)
     def zoom_str_to_float(cls, v: str):

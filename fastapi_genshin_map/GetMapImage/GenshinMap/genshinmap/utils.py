@@ -4,7 +4,7 @@ from math import ceil
 from io import BytesIO
 from typing import List, Tuple, Union
 from asyncio import gather, create_task
-
+from ...logger import logger
 from PIL import Image
 from httpx import AsyncClient
 
@@ -14,7 +14,8 @@ CLIENT = AsyncClient()
 
 
 async def get_img(url: str) -> Image.Image:
-    resp = await CLIENT.get(url)
+    logger.info(f"[API] 正在下载 {url}")
+    resp = await CLIENT.get(url, timeout=600)
     resp.raise_for_status()
     return Image.open(BytesIO(resp.read()))
 
@@ -39,7 +40,7 @@ async def make_map(map: Maps) -> Image.Image:
     另见：
         `get_map_by_pos`
     """
-    img = Image.new("RGBA", tuple(map.total_size))
+    img = Image.new("RGBA", tuple(map.total_size))  # type: ignore
     x = 0
     y = 0
     maps: List[Image.Image] = await gather(

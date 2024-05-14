@@ -9,7 +9,7 @@ from PIL import Image
 
 from .GenshinMap.genshinmap import img, models, request, utils
 from .logger import logger
-from .download import download_file
+from .download import download_file, make_P0_map
 
 Image.MAX_IMAGE_PIXELS = 603120000
 router = APIRouter(prefix="/get_map")
@@ -22,7 +22,8 @@ CHASM_PATH = MAP / "chasm.png"
 ENKANOMIYA_PATH = MAP / "enkanomiya.png"
 TEYVAT_PATH = MAP / "teyvat.png"
 
-with open(Path(__file__).parent / "map.yaml", "r", encoding="utf-8") as ymlfile:
+_path = Path(__file__).parent / "map.yaml"
+with open(_path, "r", encoding="utf-8") as ymlfile:
     resource_aliases = yaml.load(ymlfile, Loader=yaml.SafeLoader)
 
 MAP_ID_DICT = {
@@ -58,9 +59,13 @@ async def create_genshin_map():
         mark_trans = utils.get_points_by_id(3, points)
         # 转换两个锚点为标准坐标
         mark_god_converted = utils.convert_pos(mark_god, maps.detail.origin)
-        mark_trans_converted = utils.convert_pos(mark_trans, maps.detail.origin)
+        mark_trans_converted = utils.convert_pos(
+            mark_trans,
+            maps.detail.origin,
+        )
         maps = await request.get_maps(map_id)
-        map_img = await utils.make_map(maps.detail)
+        # map_img = await utils.make_map(maps.detail)
+        map_img = await make_P0_map(maps.id)
         for mark_god_point in mark_god_converted:
             map_img.paste(
                 mark_god_pic,
@@ -78,22 +83,39 @@ async def create_genshin_map():
         map_img.save(MAP / f"{map_id.name}.png")
         logger.info("****************** 开始绘制 *****************")
         trees = await request.get_labels(map_id)
-        # for tree in trees:
-        #     for label in tree.children:
-        #         await get_map_response("PRE-START", label.name, map_id, False)
+        '''
+        for tree in trees:
+            for label in tree.children:
+                await get_map_response(
+                    "PRE-START",
+                    label.name,
+                    map_id,
+                    False,
+                )
+        '''
         # 改成并发
         import asyncio
 
         tasks = []
         for tree in trees:
             for label in tree.children:
-                tasks.append(get_map_response("PRE-START", label.name, map_id, False))
+                tasks.append(
+                    get_map_response(
+                        "PRE-START",
+                        label.name,
+                        map_id,
+                        False,
+                    )
+                )
         await asyncio.gather(*tasks)
     logger.info("****************** 开始地图API服务 *****************")
 
 
 async def get_map_response(
-    prefix: str, resource_name: str, map_id: models.MapID, is_cluster: bool = False
+    prefix: str,
+    resource_name: str,
+    map_id: models.MapID,
+    is_cluster: bool = False,
 ) -> Optional[Path]:
     # 寻找主地图的缓存
     map_path = MAP / f"{map_id.name}.png"
@@ -134,7 +156,10 @@ async def get_map_response(
     transmittable = utils.get_points_by_id(resource_id, points)
 
     # 转换坐标
-    transmittable_converted = utils.convert_pos(transmittable, maps.detail.origin)
+    transmittable_converted = utils.convert_pos(
+        transmittable,
+        maps.detail.origin,
+    )
 
     # 进行最密点获取
     if is_cluster:
@@ -200,15 +225,15 @@ async def get_map_response(
                 if not icon_path.exists():
                     await download_file(icon, icon_path)
                 icon_pic = Image.open(icon_path).resize((52, 52))
-            except:
+            except:  # noqa: E722
                 await download_file(icon, icon_path)
                 continue
             break
 
-        if point.s == 1:
+        if point.s == 1:  # type: ignore
             z = 1
         else:
-            z = point.z
+            z = point.z  # type: ignore
 
         if z <= 3:
             mark = Image.open(TEXT_PATH / f"mark_{z}.png")
@@ -216,16 +241,16 @@ async def get_map_response(
             mark = Image.open(TEXT_PATH / "mark_B.png")
 
         _m = None
-        if point.s == 1:
+        if point.s == 1:  # type: ignore
             _m = Image.open(TEXT_PATH / "B.png")
-        elif point.s == 3:
+        elif point.s == 3:  # type: ignore
             _m = Image.open(TEXT_PATH / "W.png")
         if _m is not None:
             mark.paste(_m, (13, 50), _m)
 
         mark.paste(icon_pic, (25, 17), icon_pic)
 
-        mark_size = (40, 40)
+        mark_size = (70, 70)
         mark = mark.resize(mark_size)
 
         genshin_map.paste(
@@ -245,7 +270,7 @@ async def get_map_response(
     # genshin_map.save(result_buffer, format='PNG', quality=80, subsampling=0)
 
     # 进行保存
-    genshin_map.save(save_path, "JPEG", quality=90)
+    genshin_map.save(save_path, "JPEG", quality=95)
     logger.info(f"{prefix} [查询成功]：新增缓存 [{save_path.name}]！")
     return save_path
 
@@ -262,7 +287,9 @@ async def get_map_by_point(
         resource_name = resource_name.lower()
         for m in resource_aliases:
             for a in resource_aliases[m]:
-                if resource_name == a or resource_name in resource_aliases[m][a]:
+                if resource_name == a:
+                    return a
+                if resource_name in resource_aliases[m][a]:
                     return a
         return resource_name
 
