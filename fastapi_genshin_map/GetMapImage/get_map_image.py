@@ -30,6 +30,7 @@ MAP_ID_DICT = {
     "2": models.MapID.teyvat,  # 提瓦特
     "9": models.MapID.chasm,  # 层岩巨渊
     "7": models.MapID.enkanomiya,  # 渊下宫
+    "34": models.MapID.sea_of_bygone_eras,  # 旧日之海
     # MapID.golden_apple_archipelago,  # 金苹果群岛
 }
 
