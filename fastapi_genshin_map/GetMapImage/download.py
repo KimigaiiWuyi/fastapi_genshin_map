@@ -18,6 +18,7 @@ world = {
     34: '/34/9af6a4747bab91f96c598f8e8a9b7ce5',
 }
 
+_map_id = 0
 x, y = 0, 0
 
 
@@ -58,7 +59,11 @@ async def download_P0_img(
 
 
 async def make_P0_map(map_id: int) -> Image.Image:
-    global x, y
+    global x, y, _map_id
+
+    if map_id != _map_id:
+        _map_id = map_id
+        x, y = 0, 0
 
     async with AsyncClient() as client:
         TASK = []
