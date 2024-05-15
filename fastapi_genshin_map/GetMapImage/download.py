@@ -86,7 +86,11 @@ async def make_P0_map(map_id: int) -> Image.Image:
             await asyncio.gather(*TASK)
             TASK.clear()
 
-    big_img = Image.new('RGBA', (x * 256 + 2048, y * 256 + 1024))
+    if map_id == 2:
+        ox, oy = 2048, 1024
+    else:
+        ox, oy = 0, 0
+    big_img = Image.new('RGBA', (x * 256 + ox, y * 256 + oy))
 
     logger.info(f'【{map_id}切片下载完成, 开始合并】x: {x}, y: {y}')
     for i in range(x):
@@ -94,6 +98,6 @@ async def make_P0_map(map_id: int) -> Image.Image:
             logger.info(f'合并: {i} {j}')
             img = Image.open(slice_path / f'{map_id}_{i}_{j}.webp')
             img = img.convert('RGBA')
-            big_img.paste(img, (i * 256 + 2048, j * 256 + 1024), img)
+            big_img.paste(img, (i * 256 + ox, j * 256 + oy), img)
 
     return big_img
