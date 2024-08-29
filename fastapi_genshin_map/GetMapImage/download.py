@@ -12,7 +12,7 @@ slice_path.mkdir(parents=True, exist_ok=True)
 BASE = 'https://act-webstatic.mihoyo.com/ys-map-op/map'
 
 world = {
-    2: '/2/253e4ea4c79eb920429e26720cebf6ef',
+    2: '/2/c64d14ffe710540c50df8df05c96f8b5',
     7: '/7/2d0a83cf40ca8f5a2ef0b1a5199fc407',
     9: '/9/96733f1194aed673f3cdafee4f56b2d2',
     34: '/34/9af6a4747bab91f96c598f8e8a9b7ce5',
@@ -67,8 +67,8 @@ async def make_P0_map(map_id: int) -> Image.Image:
 
     async with AsyncClient() as client:
         TASK = []
-        for i in range(0, 72):
-            for j in range(0, 72):
+        for i in range(0, 99):
+            for j in range(0, 99):
                 if (slice_path / f'{map_id}_{i}_{j}.webp').exists():
                     logger.info(f'文件 {map_id}_{i}_{j}.webp 已存在！跳过下载..')
                     if x < i:
@@ -76,8 +76,8 @@ async def make_P0_map(map_id: int) -> Image.Image:
                     if y < j:
                         y = j
                     continue
-
-                TASK.append(download_P0_img(client, map_id, i, j))
+                else:
+                    TASK.append(download_P0_img(client, map_id, i, j))
                 if len(TASK) >= 15:
                     await asyncio.gather(*TASK)
                     await asyncio.sleep(0.5)
@@ -87,7 +87,7 @@ async def make_P0_map(map_id: int) -> Image.Image:
             TASK.clear()
 
     if map_id == 2:
-        ox, oy = 2048, 1024
+        ox, oy = -2048, -1024
     else:
         ox, oy = 0, 0
     big_img = Image.new('RGBA', (x * 256 + ox, y * 256 + oy))

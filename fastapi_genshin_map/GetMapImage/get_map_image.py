@@ -12,25 +12,25 @@ from .logger import logger
 from .download import download_file, make_P0_map
 
 Image.MAX_IMAGE_PIXELS = 603120000
-router = APIRouter(prefix="/get_map")
-TEXT_PATH = Path(__file__).parent / "texture2d"
-mark_quest = Image.open(TEXT_PATH / "mark_quest.png").resize((32, 32))
-MAP = Path(__file__).parent / "map_data"
-RESOURCE_PATH = Path(__file__).parent / "resource_data"
-ICON_PATH = Path(__file__).parent / "icon_data"
-CHASM_PATH = MAP / "chasm.png"
-ENKANOMIYA_PATH = MAP / "enkanomiya.png"
-TEYVAT_PATH = MAP / "teyvat.png"
+router = APIRouter(prefix='/get_map')
+TEXT_PATH = Path(__file__).parent / 'texture2d'
+mark_quest = Image.open(TEXT_PATH / 'mark_quest.png').resize((32, 32))
+MAP = Path(__file__).parent / 'map_data'
+RESOURCE_PATH = Path(__file__).parent / 'resource_data'
+ICON_PATH = Path(__file__).parent / 'icon_data'
+CHASM_PATH = MAP / 'chasm.png'
+ENKANOMIYA_PATH = MAP / 'enkanomiya.png'
+TEYVAT_PATH = MAP / 'teyvat.png'
 
-_path = Path(__file__).parent / "map.yaml"
-with open(_path, "r", encoding="utf-8") as ymlfile:
+_path = Path(__file__).parent / 'map.yaml'
+with open(_path, 'r', encoding='utf-8') as ymlfile:
     resource_aliases = yaml.load(ymlfile, Loader=yaml.SafeLoader)
 
 MAP_ID_DICT = {
-    "2": models.MapID.teyvat,  # 提瓦特
-    "9": models.MapID.chasm,  # 层岩巨渊
-    "7": models.MapID.enkanomiya,  # 渊下宫
-    "34": models.MapID.sea_of_bygone_eras,  # 旧日之海
+    '2': models.MapID.teyvat,  # 提瓦特
+    '9': models.MapID.chasm,  # 层岩巨渊
+    '7': models.MapID.enkanomiya,  # 渊下宫
+    '34': models.MapID.sea_of_bygone_eras,  # 旧日之海
     # MapID.golden_apple_archipelago,  # 金苹果群岛
 }
 
@@ -38,7 +38,7 @@ if not ICON_PATH.exists():
     ICON_PATH.mkdir(exist_ok=True)
 
 
-@router.on_event("startup")
+@router.on_event('startup')
 async def create_genshin_map():
     if (
         CHASM_PATH.exists()
@@ -46,11 +46,11 @@ async def create_genshin_map():
         and TEYVAT_PATH.exists()
         and RESOURCE_PATH.exists()
     ):
-        logger.info("****************** 开始地图API服务 *****************")
+        logger.info('****************** 开始地图API服务 *****************')
         return
-    logger.info("****************** 地图API服务进行初始化 *****************")
-    mark_god_pic = Image.open(TEXT_PATH / "mark_god.png")
-    mark_trans_pic = Image.open(TEXT_PATH / "mark_trans.png")
+    logger.info('****************** 地图API服务进行初始化 *****************')
+    mark_god_pic = Image.open(TEXT_PATH / 'mark_god.png')
+    mark_trans_pic = Image.open(TEXT_PATH / 'mark_trans.png')
     for map_id in models.MapID:
         maps = await request.get_maps(map_id)
         points = await request.get_points(map_id)
@@ -81,14 +81,14 @@ async def create_genshin_map():
             )
         if not MAP.exists():
             MAP.mkdir()
-        map_img.save(MAP / f"{map_id.name}.png")
-        logger.info("****************** 开始绘制 *****************")
+        map_img.save(MAP / f'{map_id.name}.png')
+        logger.info('****************** 开始绘制 *****************')
         trees = await request.get_labels(map_id)
         '''
         for tree in trees:
             for label in tree.children:
                 await get_map_response(
-                    "PRE-START",
+                    'PRE-START',
                     label.name,
                     map_id,
                     False,
@@ -102,14 +102,14 @@ async def create_genshin_map():
             for label in tree.children:
                 tasks.append(
                     get_map_response(
-                        "PRE-START",
+                        'PRE-START',
                         label.name,
                         map_id,
                         False,
                     )
                 )
         await asyncio.gather(*tasks)
-    logger.info("****************** 开始地图API服务 *****************")
+    logger.info('****************** 开始地图API服务 *****************')
 
 
 async def get_map_response(
@@ -119,21 +119,21 @@ async def get_map_response(
     is_cluster: bool = False,
 ) -> Optional[Path]:
     # 寻找主地图的缓存
-    map_path = MAP / f"{map_id.name}.png"
-    if "/" in resource_name:
-        resource_name = resource_name.replace("/", "_")
+    map_path = MAP / f'{map_id.name}.png'
+    if '/' in resource_name:
+        resource_name = resource_name.replace('/', '_')
 
     # 寻找保存点
     if not RESOURCE_PATH.exists():
         RESOURCE_PATH.mkdir()
     if is_cluster:
-        save_path = RESOURCE_PATH / f"{map_id.name}_{resource_name}_KMEANS.jpg"
+        save_path = RESOURCE_PATH / f'{map_id.name}_{resource_name}_KMEANS.jpg'
     else:
-        save_path = RESOURCE_PATH / f"{map_id.name}_{resource_name}.jpg"
+        save_path = RESOURCE_PATH / f'{map_id.name}_{resource_name}.jpg'
 
     # 如果存在缓存,直接回复
     if save_path.exists():
-        logger.info(f"{prefix} [查询成功]：发送缓存 [{save_path.name}]！")
+        logger.info(f'{prefix} [查询成功]：发送缓存 [{save_path.name}]！')
         return save_path
 
     maps = await request.get_maps(map_id)
@@ -193,7 +193,7 @@ async def get_map_response(
                 ]
             ]
 
-    logger.info(f"{prefix} [新增缓存]：开始绘制 {save_path.name}...")
+    logger.info(f'{prefix} [新增缓存]：开始绘制 {save_path.name}...')
     # 打开主地图
     genshin_map = Image.open(map_path)
 
@@ -220,7 +220,7 @@ async def get_map_response(
             int(point.y) - int(lt_point.y),
         )
 
-        icon_path = ICON_PATH / f"{resource_name}.png"
+        icon_path = ICON_PATH / f'{resource_name}.png'
         while True:
             try:
                 if not icon_path.exists():
@@ -237,15 +237,15 @@ async def get_map_response(
             z = point.z  # type: ignore
 
         if z <= 3:
-            mark = Image.open(TEXT_PATH / f"mark_{z}.png")
+            mark = Image.open(TEXT_PATH / f'mark_{z}.png')
         else:
-            mark = Image.open(TEXT_PATH / "mark_B.png")
+            mark = Image.open(TEXT_PATH / 'mark_B.png')
 
         _m = None
         if point.s == 1:  # type: ignore
-            _m = Image.open(TEXT_PATH / "B.png")
+            _m = Image.open(TEXT_PATH / 'B.png')
         elif point.s == 3:  # type: ignore
-            _m = Image.open(TEXT_PATH / "W.png")
+            _m = Image.open(TEXT_PATH / 'W.png')
         if _m is not None:
             mark.paste(_m, (13, 50), _m)
 
@@ -264,21 +264,21 @@ async def get_map_response(
         )
 
     # 转换RGB图
-    genshin_map = genshin_map.convert("RGB")
+    genshin_map = genshin_map.convert('RGB')
 
     # 转为Bytes,暂时废弃
     # result_buffer = BytesIO()
     # genshin_map.save(result_buffer, format='PNG', quality=80, subsampling=0)
 
     # 进行保存
-    genshin_map.save(save_path, "JPEG", quality=95)
-    logger.info(f"{prefix} [查询成功]：新增缓存 [{save_path.name}]！")
+    genshin_map.save(save_path, 'JPEG', quality=95)
+    logger.info(f'{prefix} [查询成功]：新增缓存 [{save_path.name}]！')
     return save_path
 
 
-@router.get("")
+@router.get('')
 async def get_map_by_point(
-    resource_name: str = "甜甜花",
+    resource_name: str = '甜甜花',
     map_id: Union[str, int] = 0,
     is_cluster: bool = False,
 ):
@@ -297,18 +297,18 @@ async def get_map_by_point(
     # 判断别名
     resource_name = resource_aliases_to_name(resource_name)
 
-    prefix = f">> [请求序列:{req_id}]"
+    prefix = f'>> [请求序列:{req_id}]'
     logger.info(
-        f'{prefix} [查询请求]：在地图 ID {map_id or "auto"} 内查询 {resource_name}...'
+        f'{prefix} [查询请求]：在地图 ID {map_id or 'auto'} 内查询 {resource_name}...'
     )
 
     if map_id:
         # 校验 map_id 有效性
         if map_id not in MAP_ID_DICT:
-            logger.warning(f"{prefix} [失败]：地图 ID - {map_id} 不存在！")
+            logger.warning(f'{prefix} [失败]：地图 ID - {map_id} 不存在！')
             return {
-                "retcode": -1,
-                "message": f"地图 ID - {map_id} 不存在！",
+                'retcode': -1,
+                'message': f'地图 ID - {map_id} 不存在！',
             }
         maps = [MAP_ID_DICT[str(map_id)]]
     else:
@@ -321,10 +321,10 @@ async def get_map_by_point(
             return FileResponse(res)
         if len(maps) > 1:
             logger.info(
-                f"{prefix} [自动重试]：地图 ID {map._value_} 内不存在 {resource_name}..."
+                f'{prefix} [自动重试]：地图 ID {map._value_} 内不存在 {resource_name}...'
             )
-    logger.warning(f"{prefix} [失败]：资源点 - {resource_name} 不存在！")
+    logger.warning(f'{prefix} [失败]：资源点 - {resource_name} 不存在！')
     return {
-        "retcode": -1,
-        "message": f"资源点 - {resource_name} 不存在！",
+        'retcode': -1,
+        'message': f'资源点 - {resource_name} 不存在！',
     }
