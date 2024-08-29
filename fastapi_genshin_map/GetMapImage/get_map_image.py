@@ -299,7 +299,7 @@ async def get_map_by_point(
 
     prefix = f'>> [请求序列:{req_id}]'
     logger.info(
-        f'{prefix} [查询请求]：在地图 ID {map_id or 'auto'} 内查询 {resource_name}...'
+        f"{prefix} [查询请求]：在地图 ID {map_id or 'auto'} 内查询 {resource_name}..."
     )
 
     if map_id:
