@@ -43,7 +43,12 @@ async def download_P0_img(
         return
 
     URL = BASE + world[map_id] + '/{}_P0.webp'
-    resp = await client.get(URL.format(f'{i}_{j}'))
+    try:
+        resp = await client.get(URL.format(f'{i}_{j}'))
+    except Exception as e:
+        logger.warning(f'请求失败, 可能不影响最终结果, 错误信息: {e}')
+        return
+
     if resp.status_code != 200:
         return
 
@@ -87,7 +92,7 @@ async def make_P0_map(map_id: int) -> Image.Image:
             TASK.clear()
 
     if map_id == 2:
-        ox, oy = -2048, -1024
+        ox, oy = -3072, -1024
     else:
         ox, oy = 0, 0
     big_img = Image.new('RGBA', (x * 256 + ox, y * 256 + oy))
