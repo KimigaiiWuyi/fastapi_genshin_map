@@ -249,6 +249,7 @@ async def get_map_response(
         if _m is not None:
             mark.paste(_m, (13, 50), _m)
 
+        icon_pic = icon_pic.convert('RGBA')
         mark.paste(icon_pic, (25, 17), icon_pic)
 
         mark_size = (70, 70)
