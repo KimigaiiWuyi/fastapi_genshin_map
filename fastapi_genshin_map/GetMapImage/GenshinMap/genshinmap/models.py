@@ -19,6 +19,8 @@ class MapID(IntEnum):
     """金苹果群岛"""
     sea_of_bygone_eras = 34
     """旧日之海"""
+    holy_mountain = 36
+    """远古圣山"""
 
 
 class Label(BaseModel):
@@ -72,10 +74,14 @@ class Slice(BaseModel):
 
 
 class Maps(BaseModel):
-    slices: List[HttpUrl]
-    origin: List[int]
-    total_size: List[int]
-    padding: List[int]
+    slices: Optional[List[HttpUrl]] = None
+    origin: Optional[List[int]] = None
+    total_size: Optional[List[int]] = None
+    padding: Optional[List[int]] = None
+    map_version: Optional[str] = None
+    min_zoom: Optional[int] = None
+    max_zoom: Optional[int] = None
+    original_map_size: Optional[List[int]] = None
 
     @validator("slices", pre=True)
     def slices_to_list(cls, v):
@@ -90,7 +96,8 @@ class MapInfo(BaseModel):
     name: str
     parent_id: int
     depth: int
-    detail: Maps
+    detail: Optional[Maps] = None
+    detail_v2: Optional[Maps] = None
     node_type: int
     children: list
     icon: Optional[HttpUrl]
@@ -98,7 +105,21 @@ class MapInfo(BaseModel):
 
     @validator("detail", pre=True)
     def detail_str_to_maps(cls, v):
-        return Maps.parse_raw(v)
+        if not v:
+            return None
+        return Maps.parse_obj(v)
+
+    @validator("detail_v2", pre=True)
+    def detail_v2_str_to_maps(cls, v):
+        if not v:
+            return None
+        return Maps.parse_obj(v)
+
+    @property
+    def get_detail(self):
+        if self.detail_v2:
+            return self.detail_v2
+        return self.detail
 
 
 class XYPoint(NamedTuple):

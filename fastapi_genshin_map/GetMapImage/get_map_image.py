@@ -27,6 +27,7 @@ with open(_path, 'r', encoding='utf-8') as ymlfile:
     resource_aliases = yaml.load(ymlfile, Loader=yaml.SafeLoader)
 
 MAP_ID_DICT = {
+    '36': models.MapID.holy_mountain,  # 远古圣山
     '2': models.MapID.teyvat,  # 提瓦特
     '9': models.MapID.chasm,  # 层岩巨渊
     '7': models.MapID.enkanomiya,  # 渊下宫
@@ -59,10 +60,10 @@ async def create_genshin_map():
         # 获取传送锚点
         mark_trans = utils.get_points_by_id(3, points)
         # 转换两个锚点为标准坐标
-        mark_god_converted = utils.convert_pos(mark_god, maps.detail.origin)
+        mark_god_converted = utils.convert_pos(mark_god, maps.get_detail.origin)
         mark_trans_converted = utils.convert_pos(
             mark_trans,
-            maps.detail.origin,
+            maps.get_detail.origin,
         )
         maps = await request.get_maps(map_id)
         # map_img = await utils.make_map(maps.detail)
@@ -148,6 +149,12 @@ async def get_map_response(
                 resource_name = label.name
                 icon = label.icon
                 break
+        else:
+            if resource_name == tree.name:
+                resource_id = tree.id
+                resource_name = tree.name
+                icon = tree.icon
+                break
 
     if resource_id == 0:
         return
@@ -159,7 +166,7 @@ async def get_map_response(
     # 转换坐标
     transmittable_converted = utils.convert_pos(
         transmittable,
-        maps.detail.origin,
+        maps.get_detail.origin,
     )
 
     # 进行最密点获取

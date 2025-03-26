@@ -28,19 +28,19 @@ async def main():
     points = await request.get_points(map_id)
 
     # 获取单片地图
-    map_image = await utils.get_map_by_pos(maps.detail, 1024)
+    map_image = await utils.get_map_by_pos(maps.get_detail, 1024)
     # 获取传送锚点坐标
     transmittable = utils.get_points_by_id(3, points)
     # 转换坐标
     transmittable_converted = utils.convert_pos(
-        transmittable, maps.detail.origin
+        transmittable, maps.get_detail.origin
     )
 
     # 获取地图锚点之一
     anchors = await request.get_anchors(map_id)[0]
     # 转换地图锚点偏左坐标
     anchors_converted = utils.convert_pos(
-        anchors.get_children_all_left_point(), maps.detail.origin
+        anchors.get_children_all_left_point(), maps.get_detail.origin
     )
 
 
