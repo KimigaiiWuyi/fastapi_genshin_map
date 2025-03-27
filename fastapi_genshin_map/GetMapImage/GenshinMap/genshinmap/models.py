@@ -107,7 +107,7 @@ class MapInfo(BaseModel):
     def detail_str_to_maps(cls, v):
         if not v:
             return None
-        return Maps.parse_obj(v)
+        return Maps.parse_raw(v)
 
     @validator("detail_v2", pre=True)
     def detail_v2_str_to_maps(cls, v):
