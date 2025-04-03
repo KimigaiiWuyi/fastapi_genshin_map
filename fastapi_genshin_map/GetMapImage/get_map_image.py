@@ -18,35 +18,36 @@ mark_quest = Image.open(TEXT_PATH / 'mark_quest.png').resize((32, 32))
 MAP = Path(__file__).parent / 'map_data'
 RESOURCE_PATH = Path(__file__).parent / 'resource_data'
 ICON_PATH = Path(__file__).parent / 'icon_data'
-CHASM_PATH = MAP / 'chasm.png'
-ENKANOMIYA_PATH = MAP / 'enkanomiya.png'
-TEYVAT_PATH = MAP / 'teyvat.png'
 
 _path = Path(__file__).parent / 'map.yaml'
 with open(_path, 'r', encoding='utf-8') as ymlfile:
     resource_aliases = yaml.load(ymlfile, Loader=yaml.SafeLoader)
 
 MAP_ID_DICT = {
-    '36': models.MapID.holy_mountain,  # 远古圣山
     '2': models.MapID.teyvat,  # 提瓦特
     '9': models.MapID.chasm,  # 层岩巨渊
     '7': models.MapID.enkanomiya,  # 渊下宫
     '34': models.MapID.sea_of_bygone_eras,  # 旧日之海
+    '36': models.MapID.holy_mountain,  # 远古圣山
     # MapID.golden_apple_archipelago,  # 金苹果群岛
 }
 
 if not ICON_PATH.exists():
     ICON_PATH.mkdir(exist_ok=True)
 
+#校验地图文件是否下载
+def check_map_file() :
+    for map_id in MAP_ID_DICT.values():
+        map_path = MAP / f'{map_id.name}.png'
+        if not map_path.exists():
+            logger.info(f'地图文件 {map_path} 不存在')
+            return False
+    return True
+
 
 @router.on_event('startup')
 async def create_genshin_map():
-    if (
-        CHASM_PATH.exists()
-        and ENKANOMIYA_PATH.exists()
-        and TEYVAT_PATH.exists()
-        and RESOURCE_PATH.exists()
-    ):
+    if check_map_file():
         logger.info('****************** 开始地图API服务 *****************')
         return
     logger.info('****************** 地图API服务进行初始化 *****************')
