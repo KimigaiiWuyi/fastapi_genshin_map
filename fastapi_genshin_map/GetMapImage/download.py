@@ -99,7 +99,7 @@ async def make_P0_map(map_id: int) -> Image.Image:
             TASK.clear()
 
     if map_id == 2:
-        ox, oy = -3072, 3072 + 512
+        ox, oy = 0, 0
     else:
         ox, oy = 0, 0
     big_img = Image.new('RGBA', (x * 256 + ox, y * 256 + oy))
