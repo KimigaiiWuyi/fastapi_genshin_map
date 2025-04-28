@@ -68,7 +68,7 @@ async def create_genshin_map():
         )
         maps = await request.get_maps(map_id)
         # map_img = await utils.make_map(maps.detail)
-        map_img = await make_P0_map(maps.id)
+        map_img = await make_P0_map(maps.id, maps.get_detail)
         for mark_god_point in mark_god_converted:
             map_img.paste(
                 mark_god_pic,
