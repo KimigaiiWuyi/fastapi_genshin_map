@@ -5,6 +5,7 @@ from PIL import Image
 import asyncio
 from .logger import logger
 from pathlib import Path
+from .GenshinMap.genshinmap.models import DetailV2
 
 slice_path = Path(__file__).parent / 'slice_data'
 slice_path.mkdir(parents=True, exist_ok=True)
@@ -70,8 +71,13 @@ async def download_P0_img(
     logger.info(f'请求成功，文件 [{map_id}] | {i}_{j}.webp 已保存！')
 
 
-async def make_P0_map(map_id: int) -> Image.Image:
+async def make_P0_map(map_id: int, detail_v2: DetailV2) -> Image.Image:
     global x, y, _map_id
+
+    # 左上角x,y區塊座標 (padding) — 可改為 0,0
+    x0, y0 = (val // 256 for val in detail_v2.padding)
+    # 右下角區塊座標 — 可改models.py裡的calculate_size()為t // 256
+    x1, y1 = detail_v2.calculate_size()
 
     if map_id != _map_id:
         _map_id = map_id
@@ -79,6 +85,7 @@ async def make_P0_map(map_id: int) -> Image.Image:
 
     async with AsyncClient() as client:
         TASK = []
+        """
         for i in range(0, 114):
             for j in range(0, 114):
                 if (slice_path / f'{map_id}_{i}_{j}.webp').exists():
@@ -94,6 +101,20 @@ async def make_P0_map(map_id: int) -> Image.Image:
                     await asyncio.gather(*TASK)
                     # await asyncio.sleep(0.5)
                     TASK.clear()
+        """
+        # 自動化下載區塊範圍
+        for i in range(x0, x1):
+            for j in range(y0, y1):
+                if (slice_path / f'{map_id}_{i}_{j}.webp').exists():
+                    logger.info(f'文件 {map_id}_{i}_{j}.webp 已存在！跳过下载..')
+                    continue
+                else:
+                    TASK.append(download_P0_img(client, map_id, i, j))
+                if len(TASK) >= 15:
+                    await asyncio.gather(*TASK)
+                    await asyncio.sleep(0.5)
+                    TASK.clear()
+                    
         if TASK:
             await asyncio.gather(*TASK)
             TASK.clear()
