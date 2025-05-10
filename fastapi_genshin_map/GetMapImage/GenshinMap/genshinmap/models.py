@@ -90,6 +90,17 @@ class Maps(BaseModel):
             urls.extend(j["url"] for j in i)
         return urls
 
+class DetailV2(BaseModel):
+    total_size: Tuple[int, int]
+    padding: Tuple[int, int]
+    origin: Tuple[int, int]
+    map_version: str
+    min_zoom: int
+    max_zoom: int
+    original_map_size: Tuple[int, int]
+
+    def calculate_size(self) -> Tuple[int, int]:
+        return tuple((t - p) // 256 for t, p in zip(self.total_size, self.padding))
 
 class MapInfo(BaseModel):
     id: int
@@ -97,7 +108,7 @@ class MapInfo(BaseModel):
     parent_id: int
     depth: int
     detail: Optional[Maps] = None
-    detail_v2: Optional[Maps] = None
+    detail_v2: Optional[DetailV2] = None
     node_type: int
     children: list
     icon: Optional[HttpUrl]
@@ -113,7 +124,9 @@ class MapInfo(BaseModel):
     def detail_v2_str_to_maps(cls, v):
         if not v:
             return None
-        return Maps.parse_obj(v)
+        if isinstance(v, DetailV2):  # 如果已经是 DetailV2 对象，直接返回
+            return v
+        return DetailV2.parse_obj(v)  # 解析为 DetailV2
 
     @property
     def get_detail(self):
