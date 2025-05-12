@@ -35,8 +35,9 @@ MAP_ID_DICT = {
 if not ICON_PATH.exists():
     ICON_PATH.mkdir(exist_ok=True)
 
-#校验地图文件是否下载
-def check_map_file() :
+
+# 校验地图文件是否下载
+def check_map_file():
     for map_id in MAP_ID_DICT.values():
         map_path = MAP / f'{map_id.name}.png'
         if not map_path.exists():
@@ -61,7 +62,10 @@ async def create_genshin_map():
         # 获取传送锚点
         mark_trans = utils.get_points_by_id(3, points)
         # 转换两个锚点为标准坐标
-        mark_god_converted = utils.convert_pos(mark_god, maps.get_detail.origin)
+        mark_god_converted = utils.convert_pos(
+            mark_god,
+            maps.get_detail.origin,
+        )
         mark_trans_converted = utils.convert_pos(
             mark_trans,
             maps.get_detail.origin,

@@ -13,7 +13,7 @@ slice_path.mkdir(parents=True, exist_ok=True)
 BASE = 'https://act-webstatic.mihoyo.com/ys-map-op/map'
 
 world = {
-    2: '/2/b8dda0da78acc2aba67a395117bf0bc2',
+    2: '/2/73865667c73faf29f8a0bc9f10d560c7',
     7: '/7/2d0a83cf40ca8f5a2ef0b1a5199fc407',
     9: '/9/96733f1194aed673f3cdafee4f56b2d2',
     34: '/34/9af6a4747bab91f96c598f8e8a9b7ce5',
@@ -26,7 +26,8 @@ x, y = 0, 0
 
 async def download_file(url, save_path):
     async with aiohttp.ClientSession() as session:
-        async with session.get(url) as response:
+        logger.info(f'开始下载: {url}')
+        async with session.get(str(url)) as response:
             if response.status == 200:
                 async with aiofiles.open(save_path, "wb") as f:
                     await f.write(await response.read())
@@ -74,7 +75,7 @@ async def download_P0_img(
 async def make_P0_map(map_id: int, detail_v2: DetailV2) -> Image.Image:
     global x, y, _map_id
 
-    # 左上角x,y區塊座標 (padding) — 可改為 0,0
+    # 左上角x, y區塊座標 (padding) — 可改為 0,0
     x0, y0 = (val // 256 for val in detail_v2.padding)
     # 右下角區塊座標 — 可改models.py裡的calculate_size()為t // 256
     x1, y1 = detail_v2.calculate_size()
@@ -85,23 +86,6 @@ async def make_P0_map(map_id: int, detail_v2: DetailV2) -> Image.Image:
 
     async with AsyncClient() as client:
         TASK = []
-        """
-        for i in range(0, 114):
-            for j in range(0, 114):
-                if (slice_path / f'{map_id}_{i}_{j}.webp').exists():
-                    logger.info(f'文件 {map_id}_{i}_{j}.webp 已存在！跳过下载..')
-                    if x < i:
-                        x = i
-                    if y < j:
-                        y = j
-                    continue
-                else:
-                    TASK.append(download_P0_img(client, map_id, i, j))
-                if len(TASK) >= 250:
-                    await asyncio.gather(*TASK)
-                    # await asyncio.sleep(0.5)
-                    TASK.clear()
-        """
         # 自動化下載區塊範圍
         for i in range(x0, x1):
             for j in range(y0, y1):
@@ -114,7 +98,7 @@ async def make_P0_map(map_id: int, detail_v2: DetailV2) -> Image.Image:
                     await asyncio.gather(*TASK)
                     await asyncio.sleep(0.5)
                     TASK.clear()
-                    
+
         if TASK:
             await asyncio.gather(*TASK)
             TASK.clear()
@@ -123,11 +107,14 @@ async def make_P0_map(map_id: int, detail_v2: DetailV2) -> Image.Image:
         ox, oy = 0, 0
     else:
         ox, oy = 0, 0
-    big_img = Image.new('RGBA', (x * 256 + ox, y * 256 + oy))
 
+    x = x1 - x0
+    y = y1 - y0
+    big_img = Image.new('RGBA', (x * 256 + ox, y * 256 + oy))
     logger.info(f'【{map_id}切片下载完成, 开始合并】x: {x}, y: {y}')
-    for i in range(x):
-        for j in range(y):
+
+    for i in range(x0, x1):
+        for j in range(y0, y1):
             logger.info(f'合并: {i} {j}')
             img = Image.open(slice_path / f'{map_id}_{i}_{j}.webp')
             img = img.convert('RGBA')

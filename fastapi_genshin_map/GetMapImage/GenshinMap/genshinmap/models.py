@@ -90,6 +90,7 @@ class Maps(BaseModel):
             urls.extend(j["url"] for j in i)
         return urls
 
+
 class DetailV2(BaseModel):
     total_size: Tuple[int, int]
     padding: Tuple[int, int]
@@ -100,7 +101,8 @@ class DetailV2(BaseModel):
     original_map_size: Tuple[int, int]
 
     def calculate_size(self) -> Tuple[int, int]:
-        return tuple((t - p) // 256 for t, p in zip(self.total_size, self.padding))
+        return tuple(t // 256 for t, p in zip(self.total_size, self.padding))
+
 
 class MapInfo(BaseModel):
     id: int
