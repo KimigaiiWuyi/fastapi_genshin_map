@@ -13,7 +13,7 @@ slice_path.mkdir(parents=True, exist_ok=True)
 BASE = 'https://act-webstatic.mihoyo.com/ys-map-op/map'
 
 world = {
-    2: '/2/73865667c73faf29f8a0bc9f10d560c7',
+    2: '/2/84e91c043f30df2655d34a5543be7b17',
     7: '/7/2d0a83cf40ca8f5a2ef0b1a5199fc407',
     9: '/9/96733f1194aed673f3cdafee4f56b2d2',
     34: '/34/9af6a4747bab91f96c598f8e8a9b7ce5',
@@ -116,7 +116,11 @@ async def make_P0_map(map_id: int, detail_v2: DetailV2) -> Image.Image:
     for i in range(x0, x1):
         for j in range(y0, y1):
             logger.info(f'合并: {i} {j}')
-            img = Image.open(slice_path / f'{map_id}_{i}_{j}.webp')
+            path = slice_path / f'{map_id}_{i}_{j}.webp'
+            if path.exists():
+                img = Image.open(path)
+            else:
+                img = Image.new('RGBA', (256, 256))
             img = img.convert('RGBA')
             big_img.paste(img, (i * 256 + ox, j * 256 + oy), img)
 
