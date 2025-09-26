@@ -13,7 +13,7 @@ slice_path.mkdir(parents=True, exist_ok=True)
 BASE = 'https://act-webstatic.mihoyo.com/ys-map-op/map'
 
 world = {
-    2: '/2/84e91c043f30df2655d34a5543be7b17',
+    2: '/2/38c777262414ff6a7b3e73829d4',
     7: '/7/2d0a83cf40ca8f5a2ef0b1a5199fc407',
     9: '/9/96733f1194aed673f3cdafee4f56b2d2',
     34: '/34/9af6a4747bab91f96c598f8e8a9b7ce5',
@@ -22,6 +22,23 @@ world = {
 
 _map_id = 0
 x, y = 0, 0
+
+
+async def update_world():
+    async with AsyncClient() as client:
+        resp = await client.get(
+            'https://api-takumi.mihoyo.com/common/map_user/ys_obc/v1/map/list?map_id=2&app_sn=ys_obc&lang=zh-cn'
+        )
+        if resp.status_code != 200:
+            logger.warning(f'更新地图列表失败, 状态码: {resp.status_code}')
+            return
+        data = resp.json()['data']['all_map_list']
+        for item in data:
+            if item['detail_v2']['map_version']:
+                world[item['id']] = f'/{item["id"]}/{item["detail_v2"]["map_version"]}'
+
+    logger.info(f'更新地图列表成功, 地图数量: {len(world)}')
+    logger.info(world)
 
 
 async def download_file(url, save_path):

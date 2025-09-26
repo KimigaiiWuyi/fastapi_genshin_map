@@ -9,7 +9,7 @@ from PIL import Image
 
 from .GenshinMap.genshinmap import img, models, request, utils
 from .logger import logger
-from .download import download_file, make_P0_map
+from .download import download_file, make_P0_map, update_world
 
 Image.MAX_IMAGE_PIXELS = 603120000
 router = APIRouter(prefix='/get_map')
@@ -54,6 +54,13 @@ async def create_genshin_map():
     logger.info('****************** 地图API服务进行初始化 *****************')
     mark_god_pic = Image.open(TEXT_PATH / 'mark_god.png')
     mark_trans_pic = Image.open(TEXT_PATH / 'mark_trans.png')
+
+    # 自动更新地图
+    await update_world()
+    import asyncio
+
+    await asyncio.sleep(2)
+
     for map_id in models.MapID:
         maps = await request.get_maps(map_id)
         points = await request.get_points(map_id)
@@ -72,7 +79,10 @@ async def create_genshin_map():
         )
         maps = await request.get_maps(map_id)
         # map_img = await utils.make_map(maps.detail)
+
+        # 自动制作地图
         map_img = await make_P0_map(maps.id, maps.get_detail)
+
         for mark_god_point in mark_god_converted:
             map_img.paste(
                 mark_god_pic,
@@ -114,6 +124,9 @@ async def create_genshin_map():
                         False,
                     )
                 )
+            if len(tasks) > 10:
+                await asyncio.gather(*tasks)
+                tasks = []
         await asyncio.gather(*tasks)
     logger.info('****************** 开始地图API服务 *****************')
 
