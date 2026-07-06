@@ -21,6 +21,8 @@ class MapID(IntEnum):
     """旧日之海"""
     holy_mountain = 36
     """远古圣山"""
+    frost_moon = 40
+    """霜月"""
 
 
 class Label(BaseModel):

@@ -18,6 +18,7 @@ world = {
     9: '/9/96733f1194aed673f3cdafee4f56b2d2',
     34: '/34/9af6a4747bab91f96c598f8e8a9b7ce5',
     36: '/36/bb19ccbed47e8d9dca730050219d0b90',
+    40: '/40/ddd32df1233f47e4f6dd5bbf7294112f',
 }
 
 _map_id = 0

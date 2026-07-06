@@ -30,6 +30,7 @@ MAP_ID_DICT = {
     '34': models.MapID.sea_of_bygone_eras,  # 旧日之海
     '36': models.MapID.holy_mountain,  # 远古圣山
     # MapID.golden_apple_archipelago,  # 金苹果群岛
+    '40': models.MapID.frost_moon,  # 霜月
 }
 
 if not ICON_PATH.exists():
